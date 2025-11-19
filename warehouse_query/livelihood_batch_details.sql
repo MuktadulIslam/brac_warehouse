@@ -31,16 +31,18 @@ WITH batch_enterprice_names AS (SELECT lbc.id,
                                          c.name                 as country_name,
                                          lbc.project_id,
                                          p.name                 as project_name,
+                                         lbc.fiscal_year_id,
                                          fy.name                as fiscal_year,
                                          lbc.office_id          as branch_office_id,
                                          o.name                 as branch_office_name,
                                          lbc.enterprises        as enterprise_ids,
                                          ben.enterprise_names,
-                                         lbc.batch_participants as participant_names_id,
+                                         lbc.batch_participants as participant_ids,
                                          bpn.participant_names,
                                          lbc.created_by         as created_by_id,
                                          u.name                 as created_by_name,
-                                         lbc.session,
+                                         lbc.session            as event_session_id,
+                                         es.name as event_session_name,
                                          lbc.create_time,
                                          lbc.last_sync_time,
                                          lbc.reporting_date,
@@ -57,6 +59,8 @@ WITH batch_enterprice_names AS (SELECT lbc.id,
                                            LEFT JOIN batch_enterprice_names ben ON ben.id = lbc.id
                                            LEFT JOIN batch_participant_names bpn ON bpn.id = lbc.id
                                            LEFT JOIN "user" u ON u.id = lbc.created_by
-                                  ORDER BY fy.name DESC)
+                                           LEFT JOIN event_session es ON lbc.session = es.id
+                                  ORDER BY fy.name DESC, lbc.created_by DESC)
 
+-- SELECT * INTO qa_warehouse_muktaul.livelihood_batch_details FROM livelihood_batch_details;
 SELECT * FROM livelihood_batch_details;
