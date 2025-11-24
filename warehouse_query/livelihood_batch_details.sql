@@ -60,7 +60,7 @@ WITH batch_enterprice_names AS (SELECT lbc.id,
                                            LEFT JOIN batch_participant_names bpn ON bpn.id = lbc.id
                                            LEFT JOIN "user" u ON u.id = lbc.created_by
                                            LEFT JOIN event_session es ON lbc.session = es.id
-                                  ORDER BY fy.name DESC, lbc.created_by DESC)
+                                  ORDER BY fy.name DESC, lbc.create_time DESC)
 
--- SELECT * INTO qa_warehouse_muktaul.livelihood_batch_details FROM livelihood_batch_details;
+-- SELECT * INTO muktadul.livelihood_batch_details FROM livelihood_batch_details;
 SELECT * FROM livelihood_batch_details;

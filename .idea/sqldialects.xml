@@ -8,5 +8,9 @@
     <file url="file://$PROJECT_DIR$/warehouse_query/livelihood_batch_details.sql" dialect="PostgreSQL" />
     <file url="file://$PROJECT_DIR$/warehouse_query/livelihood_batch_member_attendance_session_wise.sql" dialect="PostgreSQL" />
     <file url="file://$PROJECT_DIR$/warehouse_query/livelihood_batch_participants.sql" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/warehouse_query/livelihood_branch_target.sql" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/warehouse_query/livelihood_club_target.sql" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/warehouse_query/office_hierarchy.sql" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/warehouse_query/office_project_mapping_hierarchy.sql" dialect="PostgreSQL" />
   </component>
 </project>
