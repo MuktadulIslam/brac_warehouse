@@ -49,16 +49,24 @@ WITH hhm_with_non_duplicate_group AS MATERIALIZED (SELECT hhm.id as member_id,
                                        WHERE group_type_name IN ('YW', 'EA')
                                          AND member_support_track = '4'),
 
-     ea_yw_with_ls_and_vsla_or_plwd AS (SELECT eywls.*
+     ea_yw_with_ls_and_vsla_or_plwd AS (SELECT eywls.*,
+                                               CASE
+                                                   WHEN vsla_pwd.group_type_name ILIKE '%VSLA%' AND vsla_pwd.pwd != ',,,,,'
+                                                       THEN 'Both VSLA & PWD'
+                                                   WHEN vsla_pwd.group_type_name ILIKE '%VSLA%' THEN 'VSLA'
+                                                   WHEN vsla_pwd.pwd != ',,,,,' THEN 'PWD'
+                                                   ELSE 'None'
+                                                   END as eligible_from
                                         FROM ea_yw_with_livelihood_support eywls
-                                                 JOIN (SELECT member_id
+                                                 JOIN (SELECT member_id, group_type_name, pwd
                                                        FROM hhm_details
                                                        WHERE group_type_name ILIKE '%VSLA%'
                                                           OR pwd != ',,,,,'
-                                                       GROUP BY member_id) vsla_pwd
+                                                       GROUP BY member_id, group_type_name, pwd) vsla_pwd
                                                       on eywls.member_id = vsla_pwd.member_id),
 
-     ag_with_livelihood_support AS (SELECT * -- direct eligible for support
+     ag_with_livelihood_support AS (SELECT *, -- direct eligible for support
+                                           'Direct Livelihood' as eligible_from
                                     FROM hhm_details
                                     WHERE group_type_name IN ('AG')
                                       AND member_support_track = '4'),
@@ -76,12 +84,13 @@ WITH hhm_with_non_duplicate_group AS MATERIALIZED (SELECT hhm.id as member_id,
                                                        app.c9,
                                                        row_number() over (PARTITION BY hhm.id ORDER BY app.create_time DESC) rn
                                                 FROM aim_education_census app
-                                                         JOIN participant_group_member pgm ON pgm.id = app.item_id
-                                                         JOIN house_hold_member hhm ON hhm.id = pgm.member_id) x
+                                                         LEFT JOIN participant_group_member pgm ON pgm.id = app.item_id
+                                                         LEFT JOIN house_hold_member hhm ON hhm.id = pgm.member_id) x
                                           WHERE rn = 1),
 
      ag_edu_support_with_census_app_details_c1_0_c8_1to11 AS ( -- direct support eligible
-         SELECT es.*
+         SELECT es.*,
+                'j26=(1,2,3) & c0=0 & c8=(1-11)' as eligible_from
          FROM ag_with_educational_support es
                   JOIN aim_education_census_app_details ec ON es.member_id = ec.member_id
          WHERE ec.c1 = '0'
@@ -100,7 +109,8 @@ WITH hhm_with_non_duplicate_group AS MATERIALIZED (SELECT hhm.id as member_id,
                                                                  ON true
                                               GROUP BY p.id),
 
-     ag_with_education_census AS (SELECT hhm.* -- direct support eligible
+     ag_with_education_census AS (SELECT hhm.*, -- direct support eligible
+                                         'j26=(1,2,3) & c0=0 & c8=(12,13) & c9=0 & education_census_eligible' as eligible_from
                                   FROM hhm_details hhm
                                            JOIN ag_edu_support_with_census_app_details_c1_0_c8_12to13_c9_0 edu_2
                                                 ON edu_2.member_id = hhm.member_id
@@ -133,7 +143,8 @@ WITH hhm_with_non_duplicate_group AS MATERIALIZED (SELECT hhm.id as member_id,
                                                                      house_hold_id,
                                                                      group_name,
                                                                      group_type_name,
-                                                                     pwd
+                                                                     pwd,
+                                                                     eligible_from
                                                               FROM (SELECT *
                                                                     FROM ea_yw_with_ls_and_vsla_or_plwd
                                                                     UNION
@@ -179,16 +190,15 @@ WITH hhm_with_non_duplicate_group AS MATERIALIZED (SELECT hhm.id as member_id,
                                                          a.event_id
                                                 ORDER BY member_id, sort_order_in_event),
 
-     participant_members_attendance_data AS (SELECT epm.event_id,
+     participant_members_attendance_data AS (SELECT epm.event_id, -- 5(1), 8(0), 9(1) 1+0+1 = 2, 10-5 + 1
                                                     epm.member_id,
-                                                    count(epm.event_session_id)                                              AS total_session,
-                                                    sum(epm.ispresent)                                                       AS present_session,
-                                                    min(epm.sort_order_in_event)                                             AS session_start_from,
+                                                    count(epm.event_session_id)             AS total_session,
+                                                    sum(epm.ispresent)                      AS present_session,
+                                                    min(epm.sort_order_in_event)            AS session_start_from,
                                                     sum(epm.ispresent) * 100 /
-                                                    LEAST(12,
-                                                          (max(epm.sort_order_in_event) - min(epm.sort_order_in_event) + 1)) AS percentage
+                                                    (12 - min(epm.sort_order_in_event) + 1) AS percentage
                                              FROM fist_12_session_event_plan_member_data epm
-                                             GROUP BY epm.event_id, epm.member_id),
+                                             GROUP BY epm.event_id, epm.member_id),                        -- 552
 
 
      all_eligible_member_with_above_75_attendence AS (SELECT aemwac.*,
@@ -199,6 +209,7 @@ WITH hhm_with_non_duplicate_group AS MATERIALIZED (SELECT hhm.id as member_id,
                                                                JOIN participant_members_attendance_data pmad
                                                                     ON aemwac.member_id = pmad.member_id
                                                       WHERE pmad.percentage >= 75),                        -- 3824
+-- SELECT count(*) FROM all_eligible_member_with_above_75_attendence;       -- 155
 
 
 --------------------------------------------Eligible Mentor--------------------------------------------------
@@ -209,10 +220,11 @@ WITH hhm_with_non_duplicate_group AS MATERIALIZED (SELECT hhm.id as member_id,
                                                                 JOIN participant_group_member pgm ON pgm.member_id = t.id
                                                                 JOIN participant_group pg ON pg.id = pgm.group_id
                                                        GROUP BY t.id, pg.participant_group_type_id, pgm.fiscal_year_id
-                                                       having count(*) = 1),
-
-     vsla_trainer AS (SELECT t.id          AS member_id,
-                             t.name        AS member_name,
+                                                       having count(*) = 1)
+-- SELECT * FROM trainer_with_non_duplicate_group;
+        ,
+     vsla_trainer AS (SELECT t.id                         AS member_id,
+                             t.name                       AS member_name,
                              pgm.group_id,
                              pg.service_point_id,
                              pg.catchment_id,
@@ -225,13 +237,14 @@ WITH hhm_with_non_duplicate_group AS MATERIALIZED (SELECT hhm.id as member_id,
                              member_serial,
                              pg.project_id,
                              pg.country_id,
-                             null::text    AS house_hold_id,
-                             pg.name          group_name,
-                             pgt.name         group_type_name,
-                             null::text    AS pwd,
-                             null::numeric AS percentage,
-                             null::bigint  AS total_session,
-                             null::bigint  AS present_session
+                             null::text                   AS house_hold_id,
+                             pg.name                         group_name,
+                             pgt.name                        group_type_name,
+                             null::text                   AS pwd,
+                             'VSLA & _mentor_eligibility' as eligible_from,
+                             null::numeric                AS percentage,
+                             null::bigint                 AS total_session,
+                             null::bigint                 AS present_session
                       FROM trainer t
                                JOIN participant_group_member pgm
                                     ON t.id = pgm.member_id
@@ -303,7 +316,8 @@ WITH hhm_with_non_duplicate_group AS MATERIALIZED (SELECT hhm.id as member_id,
                                                     case
                                                         when pwd != ',,,,,' then 'yes'
                                                         else 'no'
-                                                        end                     is_pwd
+                                                        end                     is_pwd,
+                                                    eligible_from
 
                                              from all_members a
                                                       left join country c on c.id = a.country_id
@@ -313,7 +327,9 @@ WITH hhm_with_non_duplicate_group AS MATERIALIZED (SELECT hhm.id as member_id,
                                                       left join service_point sp on a.service_point_id = sp.id
                                                       left join house_hold hh on a.house_hold_id = hh.id)
 
-SELECT * FROM c3_livelihood_eligible_participants
+SELECT member_id, member_name, member_type, age,branch, village, service_point_name, group_name, group_type_name, total_session, present_session, percentage, eligible_from
+FROM c3_livelihood_eligible_participants where catchment_id='a332f8d8-78d5-4ef4-9e74-dbd74cca84a8';
 
 -- DROP MATERIALIZED VIEW customdataset.c3_livelihood_eligible_participants CASCADE;
--- SELECT * FROM customdataset.c3_livelihood_eligible_participants;
+SELECT *
+FROM customdataset.c3_livelihood_eligible_participants;
