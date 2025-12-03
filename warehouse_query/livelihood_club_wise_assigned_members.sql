@@ -49,4 +49,6 @@ WITH club_target AS (SELECT club_id, club_name, sum(branch_target) as branch_tar
                                LEFT JOIN muktadul.office_project_mapping_hierarchy opmh ON la.office_id = opmh.office_id
                       order by la.create_time desc)
 
-SELECT * FROM club_details;
+SELECT *
+-- INTO muktadul.livelihood_club_wise_assigned_members
+FROM club_details;

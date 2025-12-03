@@ -6,6 +6,8 @@
     <file url="file://$APPLICATION_CONFIG_DIR$/consoles/db/5117e435-0cd2-4b7d-a991-dac097b424ff/console.sql" value="5117e435-0cd2-4b7d-a991-dac097b424ff" />
     <file url="file://$APPLICATION_CONFIG_DIR$/consoles/db/61351561-12ee-46b7-9e33-7164305bf434/console.sql" value="61351561-12ee-46b7-9e33-7164305bf434" />
     <file url="file://$APPLICATION_CONFIG_DIR$/consoles/db/61351561-12ee-46b7-9e33-7164305bf434/console_1.sql" value="61351561-12ee-46b7-9e33-7164305bf434" />
+    <file url="file://$APPLICATION_CONFIG_DIR$/consoles/db/b5fd226c-1ee4-4e6f-9801-9df4530b0b98/console.sql" value="b5fd226c-1ee4-4e6f-9801-9df4530b0b98" />
+    <file url="file://$APPLICATION_CONFIG_DIR$/consoles/db/b5fd226c-1ee4-4e6f-9801-9df4530b0b98/console_1.sql" value="b5fd226c-1ee4-4e6f-9801-9df4530b0b98" />
     <file url="file://$PROJECT_DIR$/qa_support/c3_eligible_livelihood_track.sql" value="b5fd226c-1ee4-4e6f-9801-9df4530b0b98" />
     <file url="file://$PROJECT_DIR$/qa_support/hhm_support_track.sql" value="b5fd226c-1ee4-4e6f-9801-9df4530b0b98" />
     <file url="file://$PROJECT_DIR$/qa_support/jira-brac-7923.sql" value="b5fd226c-1ee4-4e6f-9801-9df4530b0b98" />
@@ -19,6 +21,7 @@
     <file url="file://$PROJECT_DIR$/warehouse_query/livelihood_branch_target.sql" value="b5fd226c-1ee4-4e6f-9801-9df4530b0b98" />
     <file url="file://$PROJECT_DIR$/warehouse_query/livelihood_club_target.sql" value="b5fd226c-1ee4-4e6f-9801-9df4530b0b98" />
     <file url="file://$PROJECT_DIR$/warehouse_query/livelihood_club_wise_assigned_members.sql" value="b5fd226c-1ee4-4e6f-9801-9df4530b0b98" />
+    <file url="file://$PROJECT_DIR$/warehouse_query/livelihood_eligible_participants.sql" value="b5fd226c-1ee4-4e6f-9801-9df4530b0b98" />
     <file url="file://$PROJECT_DIR$/warehouse_query/office_hierarchy.sql" value="b5fd226c-1ee4-4e6f-9801-9df4530b0b98" />
     <file url="file://$PROJECT_DIR$/warehouse_query/office_project_mapping_hierarchy.sql" value="b5fd226c-1ee4-4e6f-9801-9df4530b0b98" />
   </component>
