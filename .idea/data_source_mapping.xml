@@ -17,6 +17,8 @@
     <file url="file://$PROJECT_DIR$/warehouse_query/livelihood_batch_details.sql" value="b5fd226c-1ee4-4e6f-9801-9df4530b0b98" />
     <file url="file://$PROJECT_DIR$/warehouse_query/livelihood_batch_member_attendance_session_wise.sql" value="b5fd226c-1ee4-4e6f-9801-9df4530b0b98" />
     <file url="file://$PROJECT_DIR$/warehouse_query/livelihood_batch_participants.sql" value="b5fd226c-1ee4-4e6f-9801-9df4530b0b98" />
+    <file url="file://$PROJECT_DIR$/warehouse_query/livelihood_batch_session_attendance_data.sql" value="b5fd226c-1ee4-4e6f-9801-9df4530b0b98" />
+    <file url="file://$PROJECT_DIR$/warehouse_query/livelihood_batch_session_wise_member_attendance.sql" value="b5fd226c-1ee4-4e6f-9801-9df4530b0b98" />
     <file url="file://$PROJECT_DIR$/warehouse_query/livelihood_batch_wise_session.sql" value="b5fd226c-1ee4-4e6f-9801-9df4530b0b98" />
     <file url="file://$PROJECT_DIR$/warehouse_query/livelihood_branch_target.sql" value="b5fd226c-1ee4-4e6f-9801-9df4530b0b98" />
     <file url="file://$PROJECT_DIR$/warehouse_query/livelihood_club_target.sql" value="b5fd226c-1ee4-4e6f-9801-9df4530b0b98" />
