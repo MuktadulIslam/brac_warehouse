@@ -29,5 +29,19 @@
       <jdbc-url>jdbc:postgresql://202.4.127.189:5434/postgres</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
+    <data-source source="LOCAL" name="BRAC-prod-read-replica" uuid="26031ce2-fa6a-4c05-bf02-4379ad2b5354">
+      <driver-ref>postgresql</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
+      <jdbc-url>jdbc:postgresql://binsight-replica.c7sseomys1q4.af-south-1.rds.amazonaws.com:5445/postgres</jdbc-url>
+      <working-dir>$ProjectFileDir$</working-dir>
+    </data-source>
+    <data-source source="LOCAL" name="BRAC-prod-warehouse" uuid="61351561-12ee-46b7-9e33-7164305bf434">
+      <driver-ref>postgresql</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
+      <jdbc-url>jdbc:postgresql://datawarehouse.c7sseomys1q4.af-south-1.rds.amazonaws.com:5432/postgres</jdbc-url>
+      <working-dir>$ProjectFileDir$</working-dir>
+    </data-source>
   </component>
 </project>
