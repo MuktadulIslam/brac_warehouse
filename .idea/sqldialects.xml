@@ -16,8 +16,13 @@
     <file url="file://$PROJECT_DIR$/warehouse_query/livelihood_branch_target.sql" dialect="PostgreSQL" />
     <file url="file://$PROJECT_DIR$/warehouse_query/livelihood_club_target.sql" dialect="PostgreSQL" />
     <file url="file://$PROJECT_DIR$/warehouse_query/livelihood_club_wise_assigned_members.sql" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/warehouse_query/livelihood_distribution_asset_transfer.sql" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/warehouse_query/livelihood_distribution_eligible_participants.sql" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/warehouse_query/livelihood_distribution_member_exclude_include_data.sql" dialect="PostgreSQL" />
     <file url="file://$PROJECT_DIR$/warehouse_query/livelihood_eligible_participants.sql" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/warehouse_query/livelihood_regular_distribution_eligible_participants.sql" dialect="PostgreSQL" />
     <file url="file://$PROJECT_DIR$/warehouse_query/livelihood_tvet_enterprise.sql" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/warehouse_query/livelihood_tvet_enterprise_assigned_members.sql" dialect="PostgreSQL" />
     <file url="file://$PROJECT_DIR$/warehouse_query/office_hierarchy.sql" dialect="PostgreSQL" />
     <file url="file://$PROJECT_DIR$/warehouse_query/office_project_mapping_hierarchy.sql" dialect="PostgreSQL" />
   </component>
