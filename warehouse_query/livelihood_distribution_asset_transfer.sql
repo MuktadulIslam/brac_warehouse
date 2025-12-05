@@ -6,8 +6,8 @@ WITH distribution_asset_transfer_data AS (SELECT item_id as                    m
                                                  enterprise,
                                                  asset,
                                                  distribution_type,
-                                                 sum(number_of_asset)          asset_given,
-                                                 sum(number_of_asset_replaced) asset_replaced
+                                                 sum(coalesce(number_of_asset,0))          asset_given,
+                                                 sum(coalesce(number_of_asset_replaced,0)) asset_replaced
                                           FROM asset_transfer
                                           GROUP BY item_id, country_id, project_id, fiscal_year_id, office_id,
                                                    enterprise, asset, distribution_type),

@@ -7,6 +7,9 @@
     <file url="file://$PROJECT_DIR$/qa_support/jira-brac-7927.sql" dialect="PostgreSQL" />
     <file url="file://$PROJECT_DIR$/qa_support/jira-brac-7928.sql" dialect="PostgreSQL" />
     <file url="file://$PROJECT_DIR$/qa_support/jira-brac-7931.sql" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/warehouse_query/asset_enterprise_data.sql" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/warehouse_query/c3_livelihood_eligible_participants.sql" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/warehouse_query/dim_fiscal_year.sql" dialect="PostgreSQL" />
     <file url="file://$PROJECT_DIR$/warehouse_query/livelihood_batch_details.sql" dialect="PostgreSQL" />
     <file url="file://$PROJECT_DIR$/warehouse_query/livelihood_batch_member_attendance_session_wise.sql" dialect="PostgreSQL" />
     <file url="file://$PROJECT_DIR$/warehouse_query/livelihood_batch_participants.sql" dialect="PostgreSQL" />
@@ -20,6 +23,7 @@
     <file url="file://$PROJECT_DIR$/warehouse_query/livelihood_distribution_eligible_participants.sql" dialect="PostgreSQL" />
     <file url="file://$PROJECT_DIR$/warehouse_query/livelihood_distribution_member_exclude_include_data.sql" dialect="PostgreSQL" />
     <file url="file://$PROJECT_DIR$/warehouse_query/livelihood_eligible_participants.sql" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/warehouse_query/livelihood_member_wise_asset_distribution.sql" dialect="PostgreSQL" />
     <file url="file://$PROJECT_DIR$/warehouse_query/livelihood_regular_distribution_eligible_participants.sql" dialect="PostgreSQL" />
     <file url="file://$PROJECT_DIR$/warehouse_query/livelihood_tvet_enterprise.sql" dialect="PostgreSQL" />
     <file url="file://$PROJECT_DIR$/warehouse_query/livelihood_tvet_enterprise_assigned_members.sql" dialect="PostgreSQL" />

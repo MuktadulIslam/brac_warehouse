@@ -313,7 +313,9 @@ WITH cohort3_fiscal_year AS MATERIALIZED (SELECT *
                                                       LEFT JOIN service_point sp on a.service_point_id = sp.id
                                                       LEFT JOIN house_hold hh on a.house_hold_id = hh.id)
 
-SELECT * FROM c3_livelihood_eligible_participants;
+SELECT *
+-- INTO muktadul.c3_livelihood_eligible_participants
+FROM c3_livelihood_eligible_participants;
 
 -- DROP MATERIALIZED VIEW customdataset.c3_livelihood_eligible_participants CASCADE;
 -- SELECT * FROM customdataset.c3_livelihood_eligible_participants;

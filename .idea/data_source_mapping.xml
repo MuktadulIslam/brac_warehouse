@@ -8,13 +8,15 @@
     <file url="file://$APPLICATION_CONFIG_DIR$/consoles/db/61351561-12ee-46b7-9e33-7164305bf434/console_1.sql" value="61351561-12ee-46b7-9e33-7164305bf434" />
     <file url="file://$APPLICATION_CONFIG_DIR$/consoles/db/61351561-12ee-46b7-9e33-7164305bf434/console_2.sql" value="61351561-12ee-46b7-9e33-7164305bf434" />
     <file url="file://$APPLICATION_CONFIG_DIR$/consoles/db/b5fd226c-1ee4-4e6f-9801-9df4530b0b98/console.sql" value="b5fd226c-1ee4-4e6f-9801-9df4530b0b98" />
-    <file url="file://$APPLICATION_CONFIG_DIR$/consoles/db/b5fd226c-1ee4-4e6f-9801-9df4530b0b98/console_1.sql" value="b5fd226c-1ee4-4e6f-9801-9df4530b0b98" />
     <file url="file://$PROJECT_DIR$/qa_support/c3_eligible_livelihood_track.sql" value="b5fd226c-1ee4-4e6f-9801-9df4530b0b98" />
     <file url="file://$PROJECT_DIR$/qa_support/hhm_support_track.sql" value="b5fd226c-1ee4-4e6f-9801-9df4530b0b98" />
     <file url="file://$PROJECT_DIR$/qa_support/jira-brac-7923.sql" value="b5fd226c-1ee4-4e6f-9801-9df4530b0b98" />
     <file url="file://$PROJECT_DIR$/qa_support/jira-brac-7927.sql" value="b5fd226c-1ee4-4e6f-9801-9df4530b0b98" />
     <file url="file://$PROJECT_DIR$/qa_support/jira-brac-7928.sql" value="b5fd226c-1ee4-4e6f-9801-9df4530b0b98" />
     <file url="file://$PROJECT_DIR$/qa_support/jira-brac-7931.sql" value="b1cb730d-211a-4a46-bf4d-0bfe8b86ab92" />
+    <file url="file://$PROJECT_DIR$/warehouse_query/asset_enterprise_data.sql" value="b5fd226c-1ee4-4e6f-9801-9df4530b0b98" />
+    <file url="file://$PROJECT_DIR$/warehouse_query/c3_livelihood_eligible_participants.sql" value="b5fd226c-1ee4-4e6f-9801-9df4530b0b98" />
+    <file url="file://$PROJECT_DIR$/warehouse_query/dim_fiscal_year.sql" value="b5fd226c-1ee4-4e6f-9801-9df4530b0b98" />
     <file url="file://$PROJECT_DIR$/warehouse_query/livelihood_batch_details.sql" value="b5fd226c-1ee4-4e6f-9801-9df4530b0b98" />
     <file url="file://$PROJECT_DIR$/warehouse_query/livelihood_batch_member_attendance_session_wise.sql" value="b5fd226c-1ee4-4e6f-9801-9df4530b0b98" />
     <file url="file://$PROJECT_DIR$/warehouse_query/livelihood_batch_participants.sql" value="b5fd226c-1ee4-4e6f-9801-9df4530b0b98" />
@@ -28,6 +30,7 @@
     <file url="file://$PROJECT_DIR$/warehouse_query/livelihood_distribution_eligible_participants.sql" value="b5fd226c-1ee4-4e6f-9801-9df4530b0b98" />
     <file url="file://$PROJECT_DIR$/warehouse_query/livelihood_distribution_member_exclude_include_data.sql" value="b5fd226c-1ee4-4e6f-9801-9df4530b0b98" />
     <file url="file://$PROJECT_DIR$/warehouse_query/livelihood_eligible_participants.sql" value="b5fd226c-1ee4-4e6f-9801-9df4530b0b98" />
+    <file url="file://$PROJECT_DIR$/warehouse_query/livelihood_member_wise_asset_distribution.sql" value="b5fd226c-1ee4-4e6f-9801-9df4530b0b98" />
     <file url="file://$PROJECT_DIR$/warehouse_query/livelihood_regular_distribution_eligible_participants.sql" value="b5fd226c-1ee4-4e6f-9801-9df4530b0b98" />
     <file url="file://$PROJECT_DIR$/warehouse_query/livelihood_tvet_enterprise.sql" value="b5fd226c-1ee4-4e6f-9801-9df4530b0b98" />
     <file url="file://$PROJECT_DIR$/warehouse_query/livelihood_tvet_enterprise_assigned_members.sql" value="b5fd226c-1ee4-4e6f-9801-9df4530b0b98" />

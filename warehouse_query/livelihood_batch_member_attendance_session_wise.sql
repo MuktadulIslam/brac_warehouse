@@ -17,6 +17,7 @@ WITH session_attendanced_members AS (SELECT sa.id as training_session_id,
                                                         WHEN sam.member_id IS NOT NULL THEN 1
                                                         ELSE 0
                                                         END             AS is_present,
+                                                    sa.date             as training_date,
                                                     lbp.country_id,
                                                     lbp.country_name,
                                                     lbp.event_session_id,
