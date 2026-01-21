@@ -1,9 +1,3 @@
-{{
-    config(
-        materialized='materialized_view'
-    )
-}}
-
 --------------------------------------------Eligible Participant Member--------------------------------------------------
 WITH cohort3_fiscal_year AS MATERIALIZED (SELECT *
                                           FROM fiscal_year
@@ -95,7 +89,7 @@ WITH cohort3_fiscal_year AS MATERIALIZED (SELECT *
                                                               FROM ag_with_educational_support es
                                                                        JOIN aim_education_census_app_details ec ON es.member_id = ec.member_id
                                                               WHERE ec.c1 = '0'
-                                                                AND c8 IN ('1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11')),
+                                                                AND c8 IN ('1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '-99')),
 
      ag_edu_support_with_census_app_details_c1_0_c8_12to13_c9_0 AS (SELECT es.*
                                                                     FROM ag_with_educational_support es
@@ -113,7 +107,7 @@ WITH cohort3_fiscal_year AS MATERIALIZED (SELECT *
      ag_with_education_census AS (SELECT hhm.*
                                   FROM (SELECT *
                                         FROM hhm_details
-                                        WHERE group_type_name ilike '%AG%') hhm
+                                        WHERE group_type_name = 'AG') hhm
                                            JOIN education_census_eligable_member_ids ecemi ON ecemi.id = hhm.member_id
                                            JOIN ag_edu_support_with_census_app_details_c1_0_c8_12to13_c9_0 edu_2
                                                 ON edu_2.member_id = hhm.member_id),
@@ -173,7 +167,7 @@ WITH cohort3_fiscal_year AS MATERIALIZED (SELECT *
                                                              ce.id                                       as event_id,
                                                              es.id                                       as event_session_id,
                                                              es.sort_order_in_event
-                                                      FROM event_plan_member epm
+                                                      FROM (SELECT * FROM event_plan_member) epm
                                                                JOIN event_plan ep ON epm.event_plan_id = ep.id
                                                                JOIN event_session_for_user esfu ON ep.event_session_for_user_id = esfu.id
                                                                JOIN event_session es ON esfu.event_session_id = es.id
@@ -186,21 +180,26 @@ WITH cohort3_fiscal_year AS MATERIALIZED (SELECT *
 
      participant_members_attendance_data AS (SELECT epm.event_id,
                                                     epm.member_id,
-                                                    count(epm.event_session_id)                                              AS total_session,
-                                                    sum(epm.ispresent)                                                       AS present_session,
-                                                    min(epm.sort_order_in_event)                                             AS session_start_from,
+                                                    count(epm.event_session_id)             AS total_session,
+                                                    sum(epm.ispresent)                      AS present_session,
+                                                    min(epm.sort_order_in_event)            AS session_start_from,
                                                     sum(epm.ispresent) * 100 /
-                                                    LEAST(12,
-                                                          (max(epm.sort_order_in_event) - min(epm.sort_order_in_event) + 1)) AS percentage
+                                                    (12 - min(epm.sort_order_in_event) + 1) AS percentage
                                              FROM fist_12_session_event_plan_member_data epm
                                              GROUP BY epm.event_id, epm.member_id),
+
+     participant_members_attendance_data_with_non_duplicate_event AS (SELECT x.*
+                                                                      FROM (SELECT *,
+                                                                                   row_number() over (partition by member_id order by percentage desc) r
+                                                                            FROM participant_members_attendance_data) x
+                                                                      WHERE x.r = 1),
 
      all_eligible_member_with_above_75_attendence AS (SELECT aemwac.*,
                                                              pmad.percentage,
                                                              pmad.total_session,
                                                              pmad.present_session
                                                       FROM all_eligible_member_without_attendence_considaration aemwac
-                                                               JOIN participant_members_attendance_data pmad
+                                                               JOIN participant_members_attendance_data_with_non_duplicate_event pmad
                                                                     ON aemwac.member_id = pmad.member_id
                                                       WHERE pmad.percentage >= 75),
 
@@ -247,13 +246,40 @@ WITH cohort3_fiscal_year AS MATERIALIZED (SELECT *
                                JOIN participant_group_type pgt ON pgt.id = pg.participant_group_type_id
                       WHERE pgt.name ILIKE '%VSLA%'),
 
+     vsla_trainer_with_non_duplicate_vsla_group AS (SELECT member_id,
+                                                           member_name,
+                                                           group_id,
+                                                           service_point_id,
+                                                           catchment_id,
+                                                           participant_group_type_id,
+                                                           office_id,
+                                                           fiscal_year_id,
+                                                           gender,
+                                                           age,
+                                                           member_type,
+                                                           member_serial,
+                                                           project_id,
+                                                           country_id,
+                                                           house_hold_id,
+                                                           group_name,
+                                                           group_type_name,
+                                                           pwd,
+                                                           percentage,
+                                                           total_session,
+                                                           present_session
+                                                    FROM (SELECT *,
+                                                                 row_number() over (partition by member_id) r
+                                                          FROM vsla_trainer) x
+                                                    where r = 1),
+
 --------------------------------------------C3 Livelihood Eligible Participants--------------------------------------------------
      all_members AS (SELECT *
                      FROM all_eligible_member_with_above_75_attendence
                      UNION ALL
                      SELECT *
-                     FROM vsla_trainer),
-     c3_livelihood_eligible_participants as (SELECT get_guid()                  as id,
+                     FROM vsla_trainer_with_non_duplicate_vsla_group),
+     c3_livelihood_eligible_participants as (SELECT ''                          as id,
+                                                    --gen_random_uuid()                  as id,
                                                     member_id,
                                                     member_name,
                                                     gender,
@@ -313,7 +339,5 @@ WITH cohort3_fiscal_year AS MATERIALIZED (SELECT *
                                                       LEFT JOIN service_point sp on a.service_point_id = sp.id
                                                       LEFT JOIN house_hold hh on a.house_hold_id = hh.id)
 
-SELECT * FROM c3_livelihood_eligible_participants;
-
--- DROP MATERIALIZED VIEW customdataset.c3_livelihood_eligible_participants CASCADE;
--- SELECT * FROM customdataset.c3_livelihood_eligible_participants;
+SELECT *
+FROM c3_livelihood_eligible_participants

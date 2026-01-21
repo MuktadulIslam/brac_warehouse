@@ -32,11 +32,16 @@ WITH RECURSIVE
     office_pivot AS (SELECT original_office_id,
                             project_id,
                             country_id,
-                            MAX(CASE WHEN office_type = 'Head Office' THEN office_name END)       as head_office_name,
-                            MAX(CASE WHEN office_type = 'Divisional Office' THEN office_name END) as divisional_office_name,
-                            MAX(CASE WHEN office_type = 'Regional Office' THEN office_name END)   as regional_office_name,
-                            MAX(CASE WHEN office_type = 'Area Office' THEN office_name END)       as area_office_name,
-                            MAX(CASE WHEN office_type = 'Branch Office' THEN office_name END)     as branch_office_name
+                            MAX(CASE WHEN office_type = 'Head Office' THEN office_id END)          as head_office_id,
+                            MAX(CASE WHEN office_type = 'Head Office' THEN office_name END)        as head_office_name,
+                            MAX(CASE WHEN office_type = 'Divisional Office' THEN office_id END)    as divisional_office_id,
+                            MAX(CASE WHEN office_type = 'Divisional Office' THEN office_name END)  as divisional_office_name,
+                            MAX(CASE WHEN office_type = 'Regional Office' THEN office_id END)      as regional_office_id,
+                            MAX(CASE WHEN office_type = 'Regional Office' THEN office_name END)    as regional_office_name,
+                            MAX(CASE WHEN office_type = 'Area Office' THEN office_id END)          as area_office_id,
+                            MAX(CASE WHEN office_type = 'Area Office' THEN office_name END)        as area_office_name,
+                            MAX(CASE WHEN office_type = 'Branch Office' THEN office_id END)        as branch_office_id,
+                            MAX(CASE WHEN office_type = 'Branch Office' THEN office_name END)      as branch_office_name
                      FROM office_hierarchy
                      GROUP BY original_office_id, project_id, country_id),
 
@@ -50,10 +55,15 @@ WITH RECURSIVE
                                          opm.parent_office_id,
                                          op.country_id,
                                          c.name                AS country_name,
+                                         op.head_office_id,
                                          op.head_office_name,
+                                         op.divisional_office_id,
                                          op.divisional_office_name,
+                                         op.regional_office_id,
                                          op.regional_office_name,
+                                         op.area_office_id,
                                          op.area_office_name,
+                                         op.branch_office_id,
                                          op.branch_office_name,
                                          o.latitude,
                                          o.longitude,
@@ -74,4 +84,4 @@ WITH RECURSIVE
                                            LEFT JOIN project p ON op.project_id = p.id)
 SELECT *
 -- INTO muktadul.office_project_mapping_hierarchy
-FROM office_pivot_with_details;
+FROM office_pivot_with_details

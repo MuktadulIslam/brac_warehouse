@@ -8,8 +8,8 @@ WITH session_attendanced_members AS (SELECT sa.id as training_session_id,
                                                     sa.training_name    as training_session_name,
                                                     lbp.batch_id,
                                                     lbp.batch_name,
-                                                    lbp.member_id,
-                                                    lbp.member_name,
+                                                    lbp.participant_member_id,
+                                                    lbp.participant_member_name,
                                                     lbp.age,
                                                     lbp.gender,
                                                     lbp.house_hold_id,
@@ -17,6 +17,12 @@ WITH session_attendanced_members AS (SELECT sa.id as training_session_id,
                                                         WHEN sam.member_id IS NOT NULL THEN 1
                                                         ELSE 0
                                                         END             AS is_present,
+                                                    case
+                                                        WHEN sam.member_id IS NOT NULL THEN 'present'
+                                                        WHEN sam.member_id IS NULL AND bs.session_id IS NULL
+                                                            THEN 'no training yet'
+                                                        ELSE 'absent'
+                                                        end                attendance_status,
                                                     sa.date             as training_date,
                                                     lbp.country_id,
                                                     lbp.country_name,
@@ -42,12 +48,13 @@ WITH session_attendanced_members AS (SELECT sa.id as training_session_id,
                                                       CROSS JOIN muktadul.livelihood_batch_participants lbp
                                                       LEFT JOIN session_attendanced_members sam
                                                                 ON sa.id = sam.training_session_id
-                                                                    AND lbp.member_id = sam.member_id
+                                                                    AND lbp.participant_member_id = sam.member_id
                                                       LEFT JOIN public."user" cu ON sa.created_by = cu.id
                                                       LEFT JOIN public."user" mu ON sa.last_modified_by = mu.id
+                                                      LEFT JOIN muktadul.livelihood_batch_wise_session bs ON lbp.batch_id = bs.batch_id
                                              WHERE sa.batch = lbp.batch_id
                                              ORDER BY sa.create_time DESC)
 
 SELECT *
 -- INTO muktadul.livelihood_batch_member_attendance_session_wise
-FROM session_attendanced_members_details;
+FROM session_attendanced_members_details

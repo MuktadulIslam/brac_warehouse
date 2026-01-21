@@ -1,5 +1,5 @@
 WITH batch_enterprice_names AS (SELECT lbc.id,
-                                       string_agg(e.enterprise_name, ' ; ') AS enterprise_names
+                                       string_agg(e.enterprise_name, ',') AS enterprise_names
                                 FROM livelihood_batch_creation lbc
                                          JOIN LATERAL unnest(string_to_array(lbc.enterprises, ',')) as enterprises(id)
                                               ON true
@@ -7,7 +7,7 @@ WITH batch_enterprice_names AS (SELECT lbc.id,
                                 GROUP BY lbc.id),
 
      batch_participant_names AS (SELECT lbc.id,
-                                        string_agg(pn.member_name, ' ; ') AS participant_names
+                                        string_agg(pn.member_name, ',') AS participant_names
                                  FROM livelihood_batch_creation lbc
                                           JOIN LATERAL unnest(string_to_array(lbc.batch_participants, ',')) as bp(id)
                                                ON true

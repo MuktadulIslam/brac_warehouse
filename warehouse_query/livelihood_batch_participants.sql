@@ -12,8 +12,8 @@ SELECT lbd.id                as batch_id,
        lbd.branch_office_name,
        lbd.created_by,
        lbd.created_by_name,
-       p.id                  as member_id,
-       hhm.member_name,
+       p.id                  as participant_member_id,
+       hhm.member_name       as participant_member_name,
        hhm.age,
        CASE
            WHEN hhm.gender = '1' THEN 'Female'
@@ -21,7 +21,7 @@ SELECT lbd.id                as batch_id,
            ELSE 'Others' END as gender,
        hhm.house_hold_id
 
--- INTO muktadul.livelihood_batch_participants
+INTO muktadul.livelihood_batch_participants
 FROM muktadul.livelihood_batch_details lbd
          JOIN LATERAL unnest(string_to_array(lbd.participant_ids, ',')) p(id) ON true
          LEFT JOIN house_hold_member hhm ON p.id = hhm.id;

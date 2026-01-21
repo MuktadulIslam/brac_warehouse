@@ -23,10 +23,15 @@ WITH RECURSIVE
         WHERE oh.parent_id IS NOT NULL),
 
     office_pivot AS (SELECT original_office_id,
+                            MAX(CASE WHEN office_type = 'Head Office' THEN office_id END)         as head_office_id,
                             MAX(CASE WHEN office_type = 'Head Office' THEN office_name END)       as head_office_name,
+                            MAX(CASE WHEN office_type = 'Divisional Office' THEN office_id END)   as divisional_office_id,
                             MAX(CASE WHEN office_type = 'Divisional Office' THEN office_name END) as divisional_office_name,
+                            MAX(CASE WHEN office_type = 'Regional Office' THEN office_id END)     as regional_office_id,
                             MAX(CASE WHEN office_type = 'Regional Office' THEN office_name END)   as regional_office_name,
+                            MAX(CASE WHEN office_type = 'Area Office' THEN office_id END)         as area_office_id,
                             MAX(CASE WHEN office_type = 'Area Office' THEN office_name END)       as area_office_name,
+                            MAX(CASE WHEN office_type = 'Branch Office' THEN office_id END)       as branch_office_id,
                             MAX(CASE WHEN office_type = 'Branch Office' THEN office_name END)     as branch_office_name
                      FROM office_hierarchy
                      GROUP BY original_office_id),
@@ -39,10 +44,15 @@ WITH RECURSIVE
                                          o.parent_id,
                                          o.country_id,
                                          c.name                as country_name,
+                                         op.head_office_id,
                                          op.head_office_name,
+                                         op.divisional_office_id,
                                          op.divisional_office_name,
+                                         op.regional_office_id,
                                          op.regional_office_name,
+                                         op.area_office_id,
                                          op.area_office_name,
+                                         op.branch_office_id,
                                          op.branch_office_name,
                                          o.status,
                                          o.latitude,
@@ -54,6 +64,4 @@ WITH RECURSIVE
                                            JOIN office o ON op.original_office_id = o.id
                                            LEFT JOIN office_structure os ON o.office_type_id = os.id
                                            LEFT JOIN country c ON c.id = o.country_id)
-SELECT *
-INTO muktadul.office_hierarchy
-FROM office_pivot_with_details;
+SELECT * FROM office_pivot_with_details
