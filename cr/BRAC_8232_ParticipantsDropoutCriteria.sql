@@ -1,5 +1,32 @@
 ------------------------------------BRAC-8232: Participants Dropout Criteria------------------------------------------------
-WITH events_total_session AS (SELECT event_id,
+WITH duplicate_event_plan_member_data AS (SELECT a.member_id,
+                                                 a.event_session_id,
+                                                 a.group_id,
+                                                 a.fiscal_year_id,
+                                                 a.is_executed,
+                                                 TRIM(BOTH FROM a.attendance_date_wise ->> 'date'::text)::timestamp without time zone AS event_date,
+                                                 CASE
+                                                     WHEN (a.attendance_date_wise ->> 'isPresent'::text) = 'true'::text
+                                                         THEN 1
+                                                     ELSE 0
+                                                     END                                                                              AS ispresent
+                                          FROM (SELECT jsonb_array_elements(epm.attendance::jsonb) AS attendance_date_wise,
+                                                       epm.member_id,
+                                                       epm.group_id,
+                                                       epm.fiscal_year_id,
+                                                       esfu.event_session_id,
+                                                       ep.is_executed
+                                                FROM cohort3_event_plan_member_view epm
+                                                         JOIN event_plan ep ON ep.id = epm.event_plan_id
+                                                         JOIN event_session_for_user esfu ON esfu.id = ep.event_session_for_user_id) a),
+     event_plan_member_data AS (SELECT *
+                                FROM (SELECT *,
+                                             row_number()
+                                             over (PARTITION BY member_id, event_session_id ORDER BY ispresent DESC, is_executed DESC, event_date DESC) r
+                                      FROM duplicate_event_plan_member_data) x
+                                WHERE r = 1),
+
+     events_total_session AS (SELECT event_id,
                                      count(1) as total_session
                               FROM event_session
                               GROUP BY event_id),
@@ -22,8 +49,7 @@ WITH events_total_session AS (SELECT event_id,
                                                 JOIN participant_group pg ON pg.id = group_id
                                        WHERE ep.is_executed IS TRUE
                                          AND fy.name = 'Cohort 3'
-                                         AND e.event_name ILIKE '%Curriculum%'
-                                         and group_id = 'ad34764151a14b58b58d0401465fee6d')
+                                         AND e.event_name ILIKE '%Curriculum%')
 --      SELECT * FROM groups_total_executed_session;
         ,
 
@@ -36,8 +62,7 @@ WITH events_total_session AS (SELECT event_id,
                                                    JOIN participant_group_type pgt ON pgt.id = pg.participant_group_type_id
                                                    JOIN fiscal_year fy ON fy.id = pgm.fiscal_year_id
                                           WHERE pgt.name IN ('VYA', 'AG', 'YW', 'EA')
-                                            AND fy.name = 'Cohort 3'
-                                            AND group_id = 'ad34764151a14b58b58d0401465fee6d'),
+                                            AND fy.name = 'Cohort 3'),
 
      aged_based_member_session_data AS (SELECT gtes.event_id,
                                                gtes.total_session,
@@ -47,14 +72,14 @@ WITH events_total_session AS (SELECT event_id,
                                                c3abgm.group_id,
                                                c3abgm.group_type_id,
                                                c3abgm.group_type_name,
-                                               fswma.ispresent
+                                               epmd.ispresent
 
                                         FROM groups_total_executed_session gtes
                                                  JOIN cohort3_aged_based_group_members c3abgm
                                                       ON gtes.group_id = c3abgm.group_id
-                                                 LEFT JOIN dm_schema.fact_session_wise_member_attendance fswma
-                                                           ON fswma.member_id = c3abgm.member_id AND
-                                                              fswma.session_id = gtes.session_id),
+                                                 LEFT JOIN event_plan_member_data epmd
+                                                           ON epmd.member_id = c3abgm.member_id AND
+                                                              epmd.event_session_id = gtes.session_id),
 
      members_total_absent_count AS (SELECT member_id,
                                            pgm_id,
@@ -70,10 +95,11 @@ WITH events_total_session AS (SELECT event_id,
                                        OR ispresent IS NULL
                                     GROUP BY member_id, pgm_id, group_type_name),
 
-     droppable_members AS (SELECT * FROM members_total_absent_count
-                                    WHERE (group_type_name IN ('VYA','AG','YW') AND total_absent_count > 6) OR
-                                          (group_type_name = 'EA' AND total_absent_count > 9)
-                                    )
+     droppable_members AS (SELECT *
+                           FROM members_total_absent_count
+                           WHERE (group_type_name IN ('VYA', 'AG', 'YW') AND total_absent_count > 6)
+                              OR (group_type_name = 'EA' AND total_absent_count > 9))
 
 -- SELECT * FROM members_total_absent_count;
-SELECT * FROM droppable_members;
+SELECT *
+FROM droppable_members;

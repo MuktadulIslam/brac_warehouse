@@ -38,6 +38,7 @@ FROM (SELECT e.event_name,
                JOIN event e ON es.event_id = e.id
                JOIN fiscal_year fy ON fy.id = e.fiscal_year_id
                LEFT JOIN participant_group_type pgt ON pgt.id = es.group_type_id) x;
+SELECT * FROM event_session;
 
 ------------------ Cohort-2 event name
 -- TZ - Cross Gender session

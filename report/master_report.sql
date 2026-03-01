@@ -13,16 +13,6 @@ WITH cohort3_fiscal_year AS MATERIALIZED (SELECT *
                                    FROM participant_group_exit pge
                                             JOIN cohort3_fiscal_year fy ON fy.id = pge.fiscal_year_id),
 
-     member_dropout_from AS (SELECT member_id,
-                                    string_agg(pge.group_id, ',')                 dropout_group_ids,
-                                    string_agg(pg.name, ',')                      dropout_group_names,
-                                    string_agg(pg.participant_group_type_id, ',') dropout_group_type_ids,
-                                    string_agg(pgt.name, ',')                     dropout_group_type_names
-                             FROM c3_participant_group_exit pge
-                                      JOIN participant_group pg ON pg.id = pge.group_id
-                                      LEFT JOIN participant_group_type pgt ON pgt.id = pg.participant_group_type_id
-                             GROUP BY member_id),
-
      vsla_participant AS (SELECT pgm.member_id
                           FROM c3_participant_group_member pgm
                                    JOIN participant_group pg ON pg.id = pgm.group_id
@@ -102,41 +92,20 @@ WITH cohort3_fiscal_year AS MATERIALIZED (SELECT *
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------
      livelihood_assignment_data AS (SELECT member_id,
                                            project_id,
-                                           count(package_id)                       as total_number_of_assigned_packages,
-                                           count(package_id) > 1                   as got_multiple_packages,
-                                           string_agg(package_id, ',')             as package_id,
-                                           string_agg(package_name, ',')           as package_name,
-                                           string_agg(livelihood_option_id, ',')   as livelihood_option_id,
-                                           string_agg(livelihood_option_name, ',') as livelihood_option_name,
-                                           string_agg(livelihood_option_code, ',') as livelihood_option_code,
-                                           string_agg(category_id, ',')            as category_id,
-                                           string_agg(category_name, ',')          as category_name
+                                           count(package_id)             as total_number_of_assigned_packages,
+                                           count(package_id) > 1         as got_multiple_packages,
+                                           string_agg(package_id, ',')   as package_id,
+                                           string_agg(package_name, ',') as package_name
 
                                     FROM (SELECT unnest(string_to_array(la.enterprise_assignment_eligible_members, ',')) as member_id,
                                                  la.project_id,
                                                  la.item_id                                                              as package_id,
-                                                 e.enterprise_name                                                       as package_name,
-                                                 e.enterprise_livelihood_option                                          as livelihood_option_id,
-                                                 lo.livelihood_option_name,
-                                                 lo.livelihood_option_code,
-                                                 lo.category                                                             as category_id,
-                                                 c.category_name
+                                                 e.enterprise_name                                                       as package_name
                                           FROM livelihood_assignment la
-                                                   JOIN cohort3_fiscal_year fy ON fy.id = la.fiscal_year_id
-                                                   LEFT JOIN enterprise e ON la.item_id = e.id
-                                                   LEFT JOIN livelihood_option lo ON lo.id = e.enterprise_livelihood_option -- 48239
-                                                   LEFT JOIN _category c ON c.id = e.category) x
+                                                   JOIN enterprise e ON la.item_id = e.id) x
                                     GROUP BY project_id, member_id),
 
      member_final_pathway_with_livelihood_eligibility AS (SELECT hc3fp.member_id,
-                                                                 hc3fp.c1,
-                                                                 hc3fp.c1_text,
-                                                                 hc3fp.c6_text,
-                                                                 hc3fp.c7_text,
-                                                                 hc3fp.c8,
-                                                                 hc3fp.c8_text,
-                                                                 hc3fp.c9,
-                                                                 hc3fp.c9_text,
                                                                  hc3fp.initial_pathway,
                                                                  hc3fp.final_pathway,
                                                                  hc3fp.education_census_applicable_ag,
@@ -151,13 +120,12 @@ WITH cohort3_fiscal_year AS MATERIALIZED (SELECT *
                                                           FROM dm_schema.hhm_c3_final_pathway hc3fp
                                                                    LEFT JOIN dm_schema.c3_livelihood_eligible_participants c3lep
                                                                              ON hc3fp.member_id = c3lep.member_id
-                                                          GROUP BY hc3fp.member_id, hc3fp.c1, hc3fp.c1_text,
-                                                                   hc3fp.c6_text, hc3fp.c7_text, hc3fp.c8,
-                                                                   hc3fp.c8_text, hc3fp.c9, hc3fp.c9_text,
-                                                                   hc3fp.initial_pathway, hc3fp.final_pathway,
+                                                          GROUP BY hc3fp.member_id, hc3fp.initial_pathway,
+                                                                   hc3fp.final_pathway,
                                                                    hc3fp.education_census_applicable_ag,
                                                                    hc3fp.education_census_completed_ag,
-                                                                   hc3fp.bm_decision_for_ag, c3lep.member_id),
+                                                                   hc3fp.bm_decision_for_ag,
+                                                                   c3lep.member_id),
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Curriculum session attendance data
@@ -264,107 +232,52 @@ WITH cohort3_fiscal_year AS MATERIALIZED (SELECT *
                                               GROUP BY member_id, member_assignment_status),
 
 
-     final_data AS (SELECT hhm_data.country_name,
-                           hhm_data.country_id,
-                           hhm_data.house_hold_id,
-                           hhm_data.house_hold_serial_number,
-                           hhm_data.house_hold_member_id                     as member_id,
-                           hhm_data.member_name,
-                           hhm_data.gender,
-                           hhm_data.age,
-                           CASE
-                               WHEN mdf.
-                               END as member_once_dropout,
-                           mdf.
-                           CASE
-                               WHEN pgm.member_id IS NULL OR pgm.group_type_name ILIKE '%VSLA%' THEN 'no'
-                               ELSE 'yes'
-                               END                                           as assigned_in_aged_based_group,
+     final_data AS (SELECT hhm_data.*,
                            pgm.dropped_out,
-                           hhm_data.project_id,
-                           hhm_data.catchment_id,
-                           hhm_data.catchment_id                             as group_catchment_id,
-                           hhm_data.catchment_name                           as village_name,
-                           hhm_data.office_id,
-                           hhm_data.office_id                                as branch_office_id,
-                           hhm_data.branch_office_name,
-                           opmh.area_office_id,
-                           opmh.area_office_name,
-                           opmh.regional_office_id,
-                           opmh.regional_office_name,
-                           opmh.divisional_office_id,
-                           opmh.divisional_office_name,
-                           opmh.head_office_id,
-                           opmh.head_office_name,
-                           pgm.member_serial                                 as participant_id,
-                           pgm.member_type,
                            pgm.group_id,
                            pgm.group_name,
                            pgm.group_type_id,
                            pgm.group_type_name,
-                           pgm.service_point_id                              as group_service_point_id,
                            pgm.service_point_id,
-                           pgm.service_point_name                            as group_service_point_name,
                            pgm.service_point_name,
-                           pgm.member_type                                   as participant_type,
-                           hhm_data.fiscal_year_id,
-                           hhm_data.fiscal_year_name,
-                           CASE
-                               WHEN pmawp.member_id IS NOT NULL THEN 'yes'
-                               ELSE 'no'
-                               END                                           as have_attendance_in_curriculum_event,
-                           pmawp.event_id,
-                           e.event_name,
-                           pmawp.session_start_from                          as first_session_no,
-                           pmawp.present_session,
-                           pmawp.total_session                               as total_executed_session_in_current_group,
-                           pmawp.total_session,
-                           pmawp.percentage,
-                           hhm_data.parent_catchment_name                    as parent_of_village,
-                           hhm_data.parent_catchment_id                      as parent_id_of_village,
-                           hhm_data.catchment_name                           as participant_village,
-                           hhm_data.catchment_id                             as participant_village_id,
-                           pgm.enrollment_or_exit_date,
-                           hhm_data.member_disability,
-
-                           hhm_data.fiscal_year_name                         as fiscal_year,
-                           null::numeric                                     as present_session_in_first_12,
-                           null::numeric                                     as attendance_percentage_12_session,
-                           pmawp.percentage                                  as attendance_percentage_all_session,
-                           hhm_data.member_disability                        as plwd_status,
-                           pgm.is_vsla_participant                           as vsla_member,
+                           pgm.is_vsla_participant,
                            CASE
                                WHEN pgm.group_type_name ILIKE '%VSLA%' THEN 'yes'
                                ELSE 'no'
-                               END                                           as is_just_vsla_member,
+                               END                                         as is_just_vsla_member,
+
+                           CASE
+                               WHEN pmawp.member_id IS NOT NULL THEN 'yes'
+                               ELSE 'no'
+                               END                                         as have_attendance_in_curriculum_event,
+                           pmawp.event_id,
+                           e.event_name,
+                           pmawp.session_start_from,
+                           pmawp.present_session,
+                           pmawp.total_session                             as total_executed_session_in_current_group,
+                           pmawp.percentage,
+
+
+                           mfpwle.initial_pathway,
+                           mfpwle.final_pathway,
                            mfpwle.education_census_applicable_ag,
                            mfpwle.education_census_completed_ag,
-                           mfpwle.c1,
-                           mfpwle.c1_text                                    as "corrently_enrolled_in_school_ag (C1)",
-                           mfpwle.c6_text                                    as c6,
-                           mfpwle.c6_text                                    as "C6: Which class/grade are you currently studying?",
-                           mfpwle.c7_text                                    as c7,
-                           mfpwle.c7_text                                    as "C7: What is the highest level of education you have completed?",
-                           mfpwle.c8,
-                           mfpwle.c8_text                                    as "last_attend_school_ag (C8)",
-                           mfpwle.c9,
-                           mfpwle.c9_text                                    as "interested_in_returning_to_ school_ag (C9)",
                            mfpwle.bm_decision_for_ag,
+                           coalesce(mfpwle.eligible_for_livelihood, 'N/A') as eligible_for_livelihood,
+
                            CASE
                                WHEN femeh.member_id IS NOT NULL THEN 'yes'
                                ELSE 'no'
-                               END                                           as multiple_household_member,
-                           femeh.member_assignment_status                    as unique_eligibility,
-                           hhm_data.j26_text                                 as initial_pathway,
-                           coalesce(mfpwle.final_pathway, hhm_data.j26_text) as final_pathway,
-                           coalesce(mfpwle.eligible_for_livelihood, 'N/A')   as eligibility,
+                               END                                         as multiple_household_member,
+                           femeh.member_assignment_status                  as unique_eligibility,
+
                            CASE
                                WHEN mfpwle.eligible_for_livelihood = 'yes' THEN null
                                WHEN trim(mfpwle.final_pathway) != 'Livelihood' THEN 'Final Pathway is not livelihood'
                                WHEN mfpwle.member_duplicate_group_count > 1
                                    THEN 'Member are in duplicate aged based group'
                                WHEN mfpwle.eligible_for_livelihood IS NULL THEN 'N/A'
-                               END                                           as reason_for_ineligibility,
+                               END                                         as reason_for_ineligibility,
 
                            CASE
                                WHEN lad.total_number_of_assigned_packages IS NOT NULL
@@ -372,7 +285,7 @@ WITH cohort3_fiscal_year AS MATERIALIZED (SELECT *
                                WHEN mfpwle.eligible_for_livelihood = 'yes' THEN 'Not Assigned Yet'
                                WHEN mfpwle.eligible_for_livelihood = 'no' THEN 'Not Eligible'
                                ELSE 'N/A'
-                               END                                           as total_number_of_assigned_packages,
+                               END                                         as total_number_of_assigned_packages,
 
                            CASE
                                WHEN lad.got_multiple_packages IS NOT NULL
@@ -380,7 +293,7 @@ WITH cohort3_fiscal_year AS MATERIALIZED (SELECT *
                                WHEN mfpwle.eligible_for_livelihood = 'yes' THEN 'Not Assigned Yet'
                                WHEN mfpwle.eligible_for_livelihood = 'no' THEN 'Not Eligible'
                                ELSE 'N/A'
-                               END                                           as got_multiple_packages,
+                               END                                         as got_multiple_packages,
 
                            CASE
                                WHEN lad.package_id IS NOT NULL
@@ -388,7 +301,7 @@ WITH cohort3_fiscal_year AS MATERIALIZED (SELECT *
                                WHEN mfpwle.eligible_for_livelihood = 'yes' THEN 'Not Assigned Yet'
                                WHEN mfpwle.eligible_for_livelihood = 'no' THEN 'Not Eligible'
                                ELSE 'N/A'
-                               END                                           as package_id,
+                               END                                         as package_id,
 
                            CASE
                                WHEN lad.package_name IS NOT NULL
@@ -396,49 +309,8 @@ WITH cohort3_fiscal_year AS MATERIALIZED (SELECT *
                                WHEN mfpwle.eligible_for_livelihood = 'yes' THEN 'Not Assigned Yet'
                                WHEN mfpwle.eligible_for_livelihood = 'no' THEN 'Not Eligible'
                                ELSE 'N/A'
-                               END                                           as package_name,
-                           ----------------
-                           CASE
-                               WHEN lad.livelihood_option_id IS NOT NULL
-                                   THEN lad.livelihood_option_id
-                               WHEN mfpwle.eligible_for_livelihood = 'yes' THEN 'Not Assigned Yet'
-                               WHEN mfpwle.eligible_for_livelihood = 'no' THEN 'Not Eligible'
-                               ELSE 'N/A'
-                               END                                           as livelihood_option_id,
+                               END                                         as package_name
 
-                           CASE
-                               WHEN lad.livelihood_option_name IS NOT NULL
-                                   THEN lad.livelihood_option_name
-                               WHEN mfpwle.eligible_for_livelihood = 'yes' THEN 'Not Assigned Yet'
-                               WHEN mfpwle.eligible_for_livelihood = 'no' THEN 'Not Eligible'
-                               ELSE 'N/A'
-                               END                                           as livelihood_option_name,
-
-                           CASE
-                               WHEN lad.livelihood_option_code IS NOT NULL
-                                   THEN lad.livelihood_option_code
-                               WHEN mfpwle.eligible_for_livelihood = 'yes' THEN 'Not Assigned Yet'
-                               WHEN mfpwle.eligible_for_livelihood = 'no' THEN 'Not Eligible'
-                               ELSE 'N/A'
-                               END                                           as livelihood_option_code,
-
-                           CASE
-                               WHEN lad.category_id IS NOT NULL
-                                   THEN lad.category_id
-                               WHEN mfpwle.eligible_for_livelihood = 'yes' THEN 'Not Assigned Yet'
-                               WHEN mfpwle.eligible_for_livelihood = 'no' THEN 'Not Eligible'
-                               ELSE 'N/A'
-                               END                                           as category_id,
-
-                           CASE
-                               WHEN lad.category_name IS NOT NULL
-                                   THEN lad.category_name
-                               WHEN mfpwle.eligible_for_livelihood = 'yes' THEN 'Not Assigned Yet'
-                               WHEN mfpwle.eligible_for_livelihood = 'no' THEN 'Not Eligible'
-                               ELSE 'N/A'
-                               END                                           as category_name
-
---                     FROM {{ ref("aim_c3_hhm_data_with_hh") }} hhm_data
                     FROM reporting_schema.aim_c3_hhm_data_with_hh hhm_data
                              LEFT JOIN prticipant_group_member_with_exit pgm
                                        ON pgm.member_id = hhm_data.house_hold_member_id
@@ -450,10 +322,8 @@ WITH cohort3_fiscal_year AS MATERIALIZED (SELECT *
                              LEFT JOIN livelihood_assignment_data lad
                                        ON lad.member_id = hhm_data.house_hold_member_id AND
                                           lad.project_id = hhm_data.project_id
-                             LEFT JOIN final_eligibility_multi_eligible_hhm femeh ON femeh.member_id = pgm.member_id
-                             LEFT JOIN dm_schema.office_project_mapping_hierarchy opmh
-                                       ON opmh.office_id = hhm_data.office_id AND opmh.project_id = hhm_data.project_id
-                    LEFT JOIN member_dropout_from mdf ON mdf.member_id = hhm_data.house_hold_member_id)
+                             LEFT JOIN final_eligibility_multi_eligible_hhm femeh ON femeh.member_id = pgm.member_id)
 
 SELECT *
-FROM final_data;
+FROM final_data
+

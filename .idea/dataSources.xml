@@ -22,13 +22,6 @@
       <jdbc-url>jdbc:postgresql://202.4.127.189:5634/postgres</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
-    <data-source source="LOCAL" name="qa-202.4.127.189@5434" uuid="b5fd226c-1ee4-4e6f-9801-9df4530b0b98">
-      <driver-ref>postgresql</driver-ref>
-      <synchronize>true</synchronize>
-      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
-      <jdbc-url>jdbc:postgresql://202.4.127.189:5434/postgres</jdbc-url>
-      <working-dir>$ProjectFileDir$</working-dir>
-    </data-source>
     <data-source source="LOCAL" name="BRAC-prod-read-replica" uuid="26031ce2-fa6a-4c05-bf02-4379ad2b5354">
       <driver-ref>postgresql</driver-ref>
       <synchronize>true</synchronize>
@@ -41,6 +34,20 @@
       <synchronize>true</synchronize>
       <jdbc-driver>org.postgresql.Driver</jdbc-driver>
       <jdbc-url>jdbc:postgresql://datawarehouse.c7sseomys1q4.af-south-1.rds.amazonaws.com:5432/postgres</jdbc-url>
+      <working-dir>$ProjectFileDir$</working-dir>
+    </data-source>
+    <data-source source="LOCAL" name="postgres@202.4.127.189" uuid="dcbfa8e1-75d6-4c49-ab8a-1c40afeda690">
+      <driver-ref>postgresql</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
+      <jdbc-url>jdbc:postgresql://202.4.127.189:5434/postgres</jdbc-url>
+      <working-dir>$ProjectFileDir$</working-dir>
+    </data-source>
+    <data-source source="LOCAL" name="BRAC-prod-live" uuid="f53835b5-e5aa-4c07-a3a9-a408bbc21bd9">
+      <driver-ref>postgresql</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
+      <jdbc-url>jdbc:postgresql://binsight-pro-sa.c7sseomys1q4.af-south-1.rds.amazonaws.com:5445/postgres</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
   </component>

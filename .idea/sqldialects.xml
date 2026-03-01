@@ -9,6 +9,11 @@
     <file url="file://$PROJECT_DIR$/qa_support/jira-brac-7927.sql" dialect="PostgreSQL" />
     <file url="file://$PROJECT_DIR$/qa_support/jira-brac-7928.sql" dialect="PostgreSQL" />
     <file url="file://$PROJECT_DIR$/qa_support/jira-brac-7931.sql" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/report/Pathway.sql" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/report/c3_livelihood_assignment_final_query.sql" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/report/country_with_EA_AG_YW_VYA_gorup_type_count.sql" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/report/lr_c3_participant_photo_collection_for_pid.sql" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/report/master_report.sql" dialect="PostgreSQL" />
     <file url="file://$PROJECT_DIR$/report/participant_group_member_eligibility_report_updated.sql" dialect="PostgreSQL" />
     <file url="file://$PROJECT_DIR$/staging/fact_session_wise_member_attendance.sql" dialect="PostgreSQL" />
     <file url="file://$PROJECT_DIR$/to_kill_all_process.sql" dialect="PostgreSQL" />
