@@ -1,3 +1,0 @@
-SELECT *
--- INTO muktadul.livelihood_batch_session_attendance_data
-FROM muktadul.livelihood_batch_member_attendance_session_wise;
